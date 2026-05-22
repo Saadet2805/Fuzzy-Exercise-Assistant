@@ -1,2 +1,6 @@
-fcmpy==0.0.21
-ipykernel==6.29.5
+flask>=3.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Optional (same notebook library). If pip fails, built-in FCM engine is used.
+# fcmpy
