@@ -3,6 +3,11 @@ cd /d "%~dp0"
 set PYTHON=C:\Users\mesen\anaconda3\python.exe
 if not exist "%PYTHON%" set PYTHON=python
 
+echo Stopping old server on port 5000 if any...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5000" ^| findstr "LISTENING"') do (
+  taskkill /F /PID %%a >nul 2>&1
+)
+
 echo Fuzzy Exercise Assistant
 echo.
 echo Installing Flask...

@@ -6,128 +6,186 @@
   <title>Fuzzy Exercise Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="bg-shape bg-shape--1" aria-hidden="true"></div>
   <div class="bg-shape bg-shape--2" aria-hidden="true"></div>
 
-  <!-- Welcome screen -->
   <main id="welcome-screen" class="screen screen--active">
     <header class="hero">
-      <span class="badge">Decision Support · FCM</span>
+      <span class="badge">Exercise decision support</span>
       <h1>Fuzzy Exercise Assistant</h1>
-      <p class="hero-sub">Personalized workout guidance from your profile and goals.</p>
+      <p class="hero-sub">Answer a few questions and get a workout type that fits you.</p>
     </header>
 
-    <section class="message-card message-card--info" aria-labelledby="about-heading">
-      <div class="message-icon" aria-hidden="true">ℹ</div>
-      <div>
-        <h2 id="about-heading">About this project</h2>
-        <p>
-          This assistant uses a <strong>Fuzzy Cognitive Map (FCM)</strong> to model how
-          body metrics, fitness level, and goals influence exercise recommendations.
-          Values are grounded in expert-style rules (not random weights), and the system
-          returns clear, actionable suggestions—not only raw numbers.
-        </p>
-      </div>
+    <section class="steps-card" aria-label="How it works">
+      <h2 class="steps-title">How it works</h2>
+      <ol class="steps-list">
+        <li><strong>In the next step</strong>, calculate your BMI and enter that number.</li>
+        <li><strong>Rate your fitness and goals</strong> on sliders (1–10).</li>
+        <li><strong>See your recommendation</strong> — which exercise style fits you best.</li>
+      </ol>
     </section>
 
-    <section class="message-card message-card--attention" aria-labelledby="attention-heading">
-      <div class="message-icon" aria-hidden="true">!</div>
-      <div>
-        <h2 id="attention-heading">Please read before you start</h2>
-        <p>
-          Sliders are <strong>self-reported estimates</strong> (1 = low, 10 = high).
-          This tool does <strong>not</strong> replace medical advice. If you have pain,
-          injury, or a health condition, consult a professional before training.
-        </p>
-      </div>
+    <section class="info-box">
+      <h2>Body Mass Index (BMI)</h2>
+      <p>
+        Body Mass Index (BMI) is a measurement that estimates whether your weight is in a
+        healthy range for your height, based on your weight and height (kg/m²).
+      </p>
+    </section>
+
+    <section class="info-box info-box--compact">
+      <h2>Exercise types we recommend</h2>
+      <ul class="exercise-info-list">
+        <li><strong>Light cardio</strong> — e.g. walking, swimming, light aerobics</li>
+        <li><strong>Strength</strong> — e.g. push-ups, pull-ups, weightlifting</li>
+        <li><strong>HIIT</strong> — High-Intensity Interval Training: hard work in short bursts, then rest, repeated</li>
+        <li><strong>Beginner</strong> — beginner-level pilates, yoga, and similar programs</li>
+      </ul>
+    </section>
+
+    <section class="message-card message-card--attention">
+      <p>
+        Research prototype — not medical advice. We store <strong>first name</strong>, your
+        <strong>BMI number</strong>, slider answers, and scores in <code>results.csv</code>.
+      </p>
     </section>
 
     <button type="button" id="btn-start" class="btn btn--primary">
-      Start assessment
+      Start
       <span class="btn-arrow" aria-hidden="true">→</span>
     </button>
   </main>
 
-  <!-- Input modal -->
   <div id="input-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div class="modal-backdrop" data-close-modal></div>
     <div class="modal-panel">
       <header class="modal-header">
         <h2 id="modal-title">Your profile</h2>
-        <p class="modal-sub">Move each slider from 1 (low) to 10 (high).</p>
+        <p class="modal-sub">Step 1: BMI number · Step 2: sliders (1 = low, 10 = high)</p>
         <button type="button" class="modal-close" data-close-modal aria-label="Close">&times;</button>
       </header>
 
       <form id="profile-form" class="slider-form">
-        <div class="slider-group">
-          <div class="slider-label-row">
-            <label for="bmi">BMI</label>
-            <output id="bmi-val" for="bmi">5</output>
-          </div>
-          <input type="range" id="bmi" name="bmi" min="1" max="10" step="1" value="5" />
-          <span class="slider-hint">Higher ≈ higher body mass index</span>
+        <div class="name-group">
+          <label for="user-name">Your first name</label>
+          <input
+            type="text"
+            id="user-name"
+            name="name"
+            maxlength="40"
+            placeholder="e.g. Alex"
+            autocomplete="given-name"
+            required
+          />
         </div>
 
-        <div class="slider-group">
-          <div class="slider-label-row">
-            <label for="fitness">Fitness Level</label>
-            <output id="fitness-val" for="fitness">5</output>
+        <section class="bmi-block">
+          <h3 class="block-title">1. Your BMI (number)</h3>
+          <p class="block-text">
+            Body Mass Index (BMI) estimates whether your weight is healthy for your height.
+            Calculate yours first, then type the result below.
+          </p>
+          <a
+            class="btn btn--link btn--link-small"
+            href="https://www.calculator.net/bmi-calculator.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Open BMI calculator →</a>
+          <div class="bmi-input-row">
+            <label for="bmi-value">Your BMI value</label>
+            <input
+              type="number"
+              id="bmi-value"
+              name="bmi"
+              min="10"
+              max="60"
+              step="0.1"
+              placeholder="e.g. 24.5"
+              required
+            />
           </div>
-          <input type="range" id="fitness" name="fitness" min="1" max="10" step="1" value="5" />
-          <span class="slider-hint">Training experience and endurance</span>
-        </div>
+          <span class="field-hint">Typical range: about 18–35. Use the value from the calculator.</span>
+          <p id="bmi-category" class="bmi-category" aria-live="polite"></p>
+        </section>
 
-        <div class="slider-group">
-          <div class="slider-label-row">
-            <label for="muscle">Muscle Gain Goal</label>
-            <output id="muscle-val" for="muscle">5</output>
-          </div>
-          <input type="range" id="muscle" name="muscle" min="1" max="10" step="1" value="5" />
-          <span class="slider-hint">How much you prioritize building muscle</span>
-        </div>
+        <section class="sliders-block">
+          <h3 class="block-title">2. Fitness &amp; goals (sliders)</h3>
 
-        <div class="slider-group">
-          <div class="slider-label-row">
-            <label for="weightloss">Weight Loss Goal</label>
-            <output id="weightloss-val" for="weightloss">5</output>
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="fitness">Fitness level</label>
+              <output id="fitness-val" for="fitness">5</output>
+            </div>
+            <div class="scale-ends"><span>1 Beginner</span><span>10 Very fit</span></div>
+            <input type="range" id="fitness" name="fitness" min="1" max="10" step="1" value="5" />
           </div>
-          <input type="range" id="weightloss" name="weightloss" min="1" max="10" step="1" value="5" />
-          <span class="slider-hint">How much you prioritize losing weight</span>
-        </div>
+
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="muscle">Muscle gain goal</label>
+              <output id="muscle-val" for="muscle">5</output>
+            </div>
+            <div class="scale-ends"><span>1 Not a priority</span><span>10 Top priority</span></div>
+            <input type="range" id="muscle" name="muscle" min="1" max="10" step="1" value="5" />
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="weightloss">Weight loss goal</label>
+              <output id="weightloss-val" for="weightloss">5</output>
+            </div>
+            <div class="scale-ends"><span>1 Not a priority</span><span>10 Top priority</span></div>
+            <input type="range" id="weightloss" name="weightloss" min="1" max="10" step="1" value="5" />
+          </div>
+        </section>
 
         <p id="form-error" class="form-error" hidden role="alert"></p>
 
         <footer class="modal-footer">
           <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
-          <button type="submit" class="btn btn--primary">Run FCM &amp; show results</button>
+          <button type="submit" class="btn btn--primary">Get my recommendation</button>
         </footer>
       </form>
     </div>
   </div>
 
-  <!-- Results screen -->
-  <main id="results-screen" class="screen" hidden>
+  <main id="results-screen" class="screen">
     <header class="results-header">
-      <button type="button" id="btn-back" class="btn btn--ghost btn--small">← New assessment</button>
-      <h1>FCM results</h1>
-      <p class="hero-sub">Recommendation strength after fuzzy cognitive map inference.</p>
+      <button type="button" id="btn-back" class="btn btn--ghost btn--small">← Back to start</button>
     </header>
 
-    <section class="inputs-summary" id="inputs-summary" aria-label="Your inputs"></section>
+    <p id="save-notice" class="save-notice" hidden role="status"></p>
 
-    <section class="bar-chart-panel" aria-labelledby="chart-heading">
-      <h2 id="chart-heading" class="bar-chart-title">Exercise recommendations</h2>
-      <p class="bar-chart-legend">Bar length = FCM activation (higher = stronger match)</p>
-      <div class="bar-chart" id="bar-chart" role="img" aria-label="Colored bar chart of recommendations"></div>
+    <section class="result-hero" aria-live="polite">
+      <p class="result-greeting" id="result-greeting">Your results</p>
+      <p class="result-user-name" id="result-user-name"></p>
+      <p class="result-hero-label">Your best workout match</p>
+      <h1 id="best-match-title">—</h1>
+      <p id="best-match-examples" class="result-examples"></p>
+      <p id="best-match-text" class="result-hero-detail">—</p>
+      <p class="result-hero-pct" id="best-match-pct"></p>
     </section>
 
-    <p id="top-pick" class="top-pick" aria-live="polite"></p>
+    <section class="help-box">
+      <h2>What does this mean?</h2>
+      <p>
+        The system used your <strong>BMI number</strong> and your <strong>slider answers</strong>
+        in a fuzzy model. <strong>Match %</strong> = how well each exercise type fits (higher is better).
+      </p>
+    </section>
+
+    <section class="compare-panel" aria-labelledby="compare-heading">
+      <h2 id="compare-heading">All options compared</h2>
+      <div class="compare-list" id="compare-list"></div>
+    </section>
+
+    <section class="inputs-summary" id="inputs-summary" aria-label="Your answers"></section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

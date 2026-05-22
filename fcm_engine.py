@@ -55,9 +55,25 @@ def slider_to_fuzzy(value: int | float) -> float:
     return (v - 1) / 9.0
 
 
+def bmi_to_fuzzy(bmi: float) -> float:
+    """
+    Map real BMI (kg/m²) to fuzzy 0–1 for the FCM.
+    ~18.5 = lower end, ~35 = higher end (expert-style scale for the model).
+    """
+    bmi = float(bmi)
+    low, high = 18.5, 35.0
+    return float(max(0.0, min(1.0, (bmi - low) / (high - low))))
+
+
 def _sigmoid(x: np.ndarray, steepness: float = 1.0) -> np.ndarray:
     z = np.clip(steepness * x, -500, 500)
     return 1.0 / (1.0 + np.exp(-z))
+
+
+def _stable_concept_mask(weight_matrix: pd.DataFrame) -> np.ndarray:
+    """Concepts with no incoming edges stay fixed (same as fcmpy in-degree == 0)."""
+    w = weight_matrix.values.astype(float)
+    return np.all(w == 0, axis=0)
 
 
 def _simulate_native(
@@ -68,18 +84,21 @@ def _simulate_native(
     steepness: float = 1.0,
 ) -> pd.DataFrame:
     """
-    mKosko + sigmoid (same as fcmpy):
-    A_i(t+1) = f( A_i(t) + sum_j A_j(t) * W_{j,i} )
+    mKosko + sigmoid, matching fcmpy:
+    infer: W.T @ A + A, then sigmoid; clamp stable (input) concepts each step.
     """
     nodes = list(weight_matrix.columns)
     w = weight_matrix.values.astype(float)
     state = np.array([float(initial_state[n]) for n in nodes], dtype=float)
+    clamped = _stable_concept_mask(weight_matrix)
+    fixed_values = state[clamped].copy()
 
     rows = [state.copy()]
 
     for _ in range(iterations):
-        # W[j,i] = influence from node j to node i (row j, col i in DataFrame)
-        next_state = _sigmoid(state + w.T @ state, steepness)
+        inferred = w.T @ state + state
+        next_state = _sigmoid(inferred, steepness)
+        next_state[clamped] = fixed_values
         rows.append(next_state.copy())
 
         if np.max(np.abs(next_state - state)) <= thresh:
@@ -112,9 +131,15 @@ def simulate(
     )
 
 
-def run_fcm(bmi: int, fitness: int, muscle_gain: int, weight_loss: int) -> dict:
+def run_fcm(
+    bmi: float,
+    fitness: int,
+    muscle_gain: int,
+    weight_loss: int,
+) -> dict:
+    bmi_fuzzy = bmi_to_fuzzy(bmi)
     user_input = {
-        "BMI": slider_to_fuzzy(bmi),
+        "BMI": bmi_fuzzy,
         "Fitness_Lvl": slider_to_fuzzy(fitness),
         "Goal_MuscleGain": slider_to_fuzzy(muscle_gain),
         "Goal_WeightLoss": slider_to_fuzzy(weight_loss),
@@ -130,8 +155,9 @@ def run_fcm(bmi: int, fitness: int, muscle_gain: int, weight_loss: int) -> dict:
 
     return {
         "engine": "fcmpy" if _USE_FCMPY else "native",
+        "bmi_value": round(float(bmi), 1),
         "inputs_fuzzy": {
-            "BMI": user_input["BMI"],
+            "BMI": bmi_fuzzy,
             "Fitness_Lvl": user_input["Fitness_Lvl"],
             "Goal_MuscleGain": user_input["Goal_MuscleGain"],
             "Goal_WeightLoss": user_input["Goal_WeightLoss"],
