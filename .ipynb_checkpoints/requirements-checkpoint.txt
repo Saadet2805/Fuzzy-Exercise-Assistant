@@ -1,0 +1,2 @@
+fcmpy==0.0.21
+ipykernel==6.29.5
