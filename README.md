@@ -68,20 +68,20 @@ pandas>=1.0.0
 ### 3. Install Dependencies
 
 Open a terminal in the project directory and run:
-
+```
 pip install -r requirements.txt
-
+```
 Or install manually:
-
+```
 pip install flask numpy pandas
-
+```
 ### 4. Optional: Install fcmpy (for exact library match)
 
-The system includes a native fallback implementation that works without fcmpy. However, if you wish to use the official fcmpy library:
-
+The system includes a native fallback implementation that works without `fcmpy`. However, if you wish to use the official `fcmpy` library:
+```
 pip install fcmpy
-
-**Note:** fcmpy requires an older version of pandas (1.3.3). If installation fails, the system will automatically fall back to the native implementation with identical mathematical behavior.
+```
+**Note:** `fcmpy` requires an older version of pandas (1.3.3). If installation fails, the system will automatically fall back to the native implementation with identical mathematical behavior.
 
 
 ## Running the Application
@@ -89,9 +89,9 @@ pip install fcmpy
 ### 1. Start the Flask Server
 
 In the project direcctory, run: 
-
+```
 python server.py
-
+```
 You should see output similar to:
 
 ```txt
