@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project was developed as part of the **Fuzzy Sets and Systems II** course at the University of Bern, under the supervision of **Prof. Dr. Edy Portmann** and **MSc. Sandro Suter**.
+This project was developed as part of the **Fuzzy Sets and Systems II** course at the University of Fribourg, under the supervision of **Prof. Dr. Edy Portmann** and **MSc. Sandro Suter**.
 
 The Fuzzy Exercise Assistant is a decision support system that generates personalized exercise category recommendations using a **Fuzzy Cognitive Map (FCM)**. The system takes user inputs—Body Mass Index (BMI), self-reported fitness level, muscle gain priority, and weight loss priority—and produces ranked recommendations for four exercise categories:
 
@@ -16,6 +16,7 @@ The system implements the **mKosko inference method** with a **sigmoid transfer 
 ---
 
 ## Project Structure
+```
 fuzzy-exercise-assistant/
 │
 ├── server.py # Flask backend server
@@ -27,7 +28,7 @@ fuzzy-exercise-assistant/
 ├── results.csv # Logged user data (auto-generated)
 ├── README.md # This file
 └── requirements.txt # Python dependencies
-
+```
 
 ---
 
@@ -129,7 +130,7 @@ http://127.0.0.1:5000
 
 ### 4. Stopping the Server
 
-Press Ctrl + C in the terminal to stop the Flask server.
+Press `Ctrl + C` in the terminal to stop the Flask server.
 
 ## Evaluation Summary
 
